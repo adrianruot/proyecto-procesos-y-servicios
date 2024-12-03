@@ -1,11 +1,16 @@
 package servidor;
 
+import cifrado.CifradoAsimetrico;
+
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
-import java.io.DataInputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 public class Servidor {
 
@@ -44,11 +49,27 @@ class HiloServidor extends Thread {
     @Override
     public void run() {
         try {
-            DataInputStream in = new DataInputStream(socket.getInputStream());
+            KeyPair keyPair = CifradoAsimetrico.generarParClaves();
+            PublicKey publicKey = keyPair.getPublic();
+            PrivateKey privateKey = keyPair.getPrivate();
 
-            System.out.println(in.readUTF());
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream());
+
+            switch(in.readInt()) {
+                case 1: { // INICIAR SESION
+                    break;
+                }
+                case 2: {
+                    objOut.writeObject(publicKey);
+
+                    break;
+                }
+            }
         } catch(Exception e) {
-            e.printStackTrace();
+            System.out.println("USUARIO DESCONECTADO DEL SERVIDOR." + e.getMessage());
         }
     }
 

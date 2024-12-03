@@ -1,7 +1,7 @@
 import cliente.Cliente;
+import global.GLOBALES;
 import servidor.Servidor;
 
-import java.net.Socket;
 import java.util.Scanner;
 
 public class Main {
@@ -25,7 +25,7 @@ public class Main {
                     break;
                 }
                 case 2: {
-                    new Cliente().mandarMensaje("hola ?");
+                    new Cliente();
 
 
                     break;
