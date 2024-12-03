@@ -1,15 +1,27 @@
 package cliente;
 
+import javax.net.ssl.*;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Cliente {
 
-    private Socket socket = null;
+    private SSLSocket socket = null;
+
+    private Scanner scanner = new Scanner(System.in);
 
     public Cliente() {
         try {
-            this.socket = new Socket("localhost", 4444);
+            System.setProperty("javax.net.ssl.trustStore", "src/certificados/UsuarioAlmacenSSL.jks");
+            System.setProperty("javax.net.ssl.trustStorePassword", "7654321");
+
+            System.out.println("Conectando como cliente\nEscribe una direccion IP: ");
+
+            String ip = scanner.next();
+
+            this.socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket(ip, 4444);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

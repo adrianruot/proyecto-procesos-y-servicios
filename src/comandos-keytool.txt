@@ -1,0 +1,6 @@
+keytool.exe -genkey -keyalg RSA -alias claveSSL -keystore "C:\
+Users\9fdam05\Documents\AlmacenSSL.jks" -storepass 1234567
+
+keytool -export -keystore "C:\Users\9fdam05\Documents\AlmacenSSL.jks" -alias claveSSL -file "C:\Users\9fdam05\Documents\Certificado.cer"
+
+keytool.exe -import -alias claveSSL -file "C:\Users\9fdam05\Documents\Certificado.cer" -keystore "C:\Users\9fdam05\Documents\UsuarioAlmacenSSL.jks" -storepass 7654321
