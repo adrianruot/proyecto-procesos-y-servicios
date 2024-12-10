@@ -21,6 +21,12 @@ public class Cliente {
 
     private Scanner scanner = new Scanner(System.in);
 
+    private int iniciadoSesion = 0;
+
+    private String usuarioInicio = null;
+
+    private String nombreInicio = null;
+
     public Cliente() {
         try {
             System.setProperty("javax.net.ssl.trustStore", "src/certificados/UsuarioAlmacenSSL.jks");
@@ -38,6 +44,32 @@ public class Cliente {
         }
     }
 
+    private void iniciadoSesion() {
+        int i = -1;
+
+        while(i != 0) {
+            System.out.println("1: Crear incidencia\n2: Salir\n");
+            System.out.print(GLOBALES.cursor);
+            i = scanner.nextInt();
+            switch (i) {
+                case 1: {
+                    System.out.print("Aqui creamos cosas.");
+                    break;
+                }
+                case 2: {
+                    i = 0;
+                    iniciadoSesion = 0;
+                    usuarioInicio = null;
+                    nombreInicio = null;
+                    break;
+                }
+                default: {
+                    System.out.println("Por favor recuerde escoger o la opcion 1: Crear incidencia, o la opción 2: Salir\n");
+                }
+            }
+        }
+    }
+
     private void inicioORegistroSesion() {
         int i = -1;
 
@@ -48,7 +80,9 @@ public class Cliente {
             switch (i) {
                 case 1: {
                     iniciarSesion();
-
+                    if(iniciadoSesion == 1) {
+                        iniciadoSesion(); // ENTRAMOS EN EL CAMPO YA UNA VEZ INICIADOS SESION
+                    }
                     break;
                 }
                 case 2: {
@@ -67,7 +101,40 @@ public class Cliente {
         try {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
-            out.writeInt(1);
+            out.writeInt(1); // CON ESTO INDICAMOS QUE QUEREMOS INICAR SESION.
+
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+            PublicKey publicKey = (PublicKey) in.readObject();
+
+            System.out.println("Panel para iniciar sesion: \nUsuario: \n");
+            System.out.print(GLOBALES.cursor);
+
+            String usuario = scanner.next().trim().replaceAll(" ", "");
+
+            System.out.println("\nContraseña: \n");
+            System.out.print(GLOBALES.cursor);
+
+            String contra = scanner.next().trim().replaceAll(" ", "");
+
+            byte[] cifradoInicioSesion = CifradoAsimetrico.cifrarConClavePublica(usuario + " " + contra, publicKey);
+
+            out.writeInt(cifradoInicioSesion.length);
+
+            out.write(cifradoInicioSesion);
+
+            DataInputStream inData = new DataInputStream(socket.getInputStream());
+
+            String resul = inData.readUTF();
+
+            if(resul.equals("Error inicio sesion")) {
+                System.out.println("Error inicio sesion, vuelva a intentarlo por favor");
+            } else {
+                System.out.println("Se ha realizado la sesion");
+                iniciadoSesion = 1;
+                usuarioInicio = resul.split(" ")[1];
+                nombreInicio = resul.split(" ")[0];
+            }
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -85,6 +152,7 @@ public class Cliente {
         int check = 0;
         int edad = 0;
 
+        // EN ESTE WHILE COMPROBAMOS QUE EL DATO PARA EDAD SEA UN NUMERO SI O SI
         while(check == 0) {
             try {
 
