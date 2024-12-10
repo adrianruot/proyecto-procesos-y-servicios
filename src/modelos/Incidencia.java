@@ -4,16 +4,26 @@ public class Incidencia {
 
     private String infoPrec;
 
-    private String comunicado;
+    private String caracteristicas;
 
     private String impacto;
 
-    public Incidencia(String infoPrec, String comunicado, String impacto) {
+    private String usuario;
+
+    public Incidencia(String infoPrec, String caracteristicas, String impacto, String usuario) {
         this.infoPrec = infoPrec;
-        this.comunicado = comunicado;
+        this.caracteristicas = caracteristicas;
         this.impacto = impacto;
+        this.usuario = usuario;
     }
 
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
 
     public String getInfoPrec() {
         return infoPrec;
@@ -23,13 +33,9 @@ public class Incidencia {
         this.infoPrec = infoPrec;
     }
 
-    public String getComunicado() {
-        return comunicado;
-    }
+    public String getCaracteristicas() {return caracteristicas;}
 
-    public void setComunicado(String comunicado) {
-        this.comunicado = comunicado;
-    }
+    public void setCaracteristicas(String caracteristicas) {this.caracteristicas = caracteristicas;}
 
     public String getImpacto() {
         return impacto;

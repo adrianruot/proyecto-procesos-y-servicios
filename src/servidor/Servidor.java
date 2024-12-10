@@ -120,6 +120,24 @@ class HiloServidor extends Thread {
                     }
                     case 3: { // CREAR INCIDENCIA
 
+                        String infoPrec = in.readUTF();
+
+                        int tamBuf = in.readInt();
+
+                        if(tamBuf > 0) {
+                            byte[] incidenciaNuevaInfo = new byte[tamBuf];
+
+                            in.readFully(incidenciaNuevaInfo, 0, tamBuf);
+
+                            System.out.println(infoPrec + " " + incidenciaNuevaInfo.toString());
+                        }
+
+                        /*
+                        Signature verificadsa = Signature.getInstance("SHA256withDSA");
+ verificadsa.initVerify(clavepub);
+ verificadsa.update(mensaje.getBytes());
+ boolean check = verificadsa.verify(firma);
+                         */
 
                         valor = in.readInt();
                         break;

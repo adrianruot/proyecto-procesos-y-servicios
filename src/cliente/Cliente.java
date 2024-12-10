@@ -6,12 +6,9 @@ import modelos.Empleado;
 import servidor.Servidor;
 
 import javax.net.ssl.*;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.Socket;
-import java.security.PublicKey;
+import java.security.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -20,6 +17,10 @@ public class Cliente {
     private SSLSocket socket = null;
 
     private Scanner scanner = new Scanner(System.in);
+
+    private PrivateKey privateKey = null;
+
+    private PublicKey publicKey = null;
 
     private int iniciadoSesion = 0;
 
@@ -31,6 +32,14 @@ public class Cliente {
         try {
             System.setProperty("javax.net.ssl.trustStore", "src/certificados/UsuarioAlmacenSSL.jks");
             System.setProperty("javax.net.ssl.trustStorePassword", "7654321");
+
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("DSA");
+
+            KeyPair keyPair = keyPairGenerator.genKeyPair();
+
+            privateKey = keyPair.getPrivate();
+
+            publicKey = keyPair.getPublic();
 
             System.out.println("Conectando como cliente\nEscribe una direccion IP: ");
 
@@ -44,6 +53,29 @@ public class Cliente {
         }
     }
 
+    private byte[] firmarCaracteristicas(String caracteristicas) {
+        try {
+            Signature dsa = Signature.getInstance("SHA256withDSA");
+
+            dsa.initSign(privateKey);
+
+            dsa.update(caracteristicas.getBytes());
+
+            return dsa.sign();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Fallo en la firma");
+        }
+        return null;
+    }
+
+    private String prompt(String mensaje) {
+        System.out.println("\n" + mensaje + "\n");
+        System.out.print(GLOBALES.cursor);
+
+        return scanner.next().trim();
+    }
+
     private void iniciadoSesion() {
         int i = -1;
 
@@ -53,7 +85,31 @@ public class Cliente {
             i = scanner.nextInt();
             switch (i) {
                 case 1: {
-                    System.out.print("Aqui creamos cosas.");
+                    try {
+                        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+                        out.writeInt(3); // QUEREMOS ENTRAR EN EL MODO DE CREAR INCIDENCIA
+
+                        System.out.println("\nInformacion precisa de la incidencia: \n");
+                        System.out.print(GLOBALES.cursor);
+
+                        String infoPrec = scanner.next().trim();
+
+                        String caracteristicas = prompt("Caracteristicas: ");
+
+                        byte[] bytesCarac = firmarCaracteristicas(caracteristicas);
+
+                        out.writeUTF(infoPrec);
+
+                        out.writeInt(bytesCarac.length);
+
+                        out.write(bytesCarac);
+
+                        //ObjectOutputStream outObj = new ObjectOutputStream(socket.getOutputStream());
+
+                    } catch(Exception e) {
+
+                    }
                     break;
                 }
                 case 2: {
