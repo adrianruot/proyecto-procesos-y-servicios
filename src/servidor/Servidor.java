@@ -1,6 +1,7 @@
 package servidor;
 
 import cifrado.CifradoAsimetrico;
+import modelos.Empleado;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -11,12 +12,15 @@ import java.net.Socket;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 
 public class Servidor {
 
     private SSLServerSocket server = null;
 
     private SSLSocket socket = null;
+
+    public static ArrayList<Empleado> empleados = new ArrayList<>();
 
     public Servidor() {
         try {
@@ -54,20 +58,41 @@ class HiloServidor extends Thread {
             PrivateKey privateKey = keyPair.getPrivate();
 
             DataInputStream in = new DataInputStream(socket.getInputStream());
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream());
 
-            switch(in.readInt()) {
-                case 1: { // INICIAR SESION
-                    break;
-                }
-                case 2: {
-                    objOut.writeObject(publicKey);
+            int valor = in.readInt();
 
-                    break;
+            while(valor != -1) {
+                switch(valor) { // LA LECTURA DE IN SERA LA OPCION QUE QUIERE HACER EL USUARIO.
+                    case 1: { // INICIAR SESION
+                        System.out.println("Iniciar servidor ?");
+                        valor = in.readInt();
+                        break;
+                    }
+                    case 2: {
+                        ObjectOutputStream objOut = new ObjectOutputStream(socket.getOutputStream());
+                        objOut.writeObject(publicKey);
+
+                        int length = in.readInt();
+                        if(length > 0) {
+                            byte[] empleadoNuevoInfo = new byte[length];
+
+                            in.readFully(empleadoNuevoInfo, 0, empleadoNuevoInfo.length);
+
+                            String datosEmpleadoNuevo = CifradoAsimetrico.descifrarConClavePrivada(empleadoNuevoInfo, privateKey);
+
+                            String[] datosEmplSep = datosEmpleadoNuevo.split(" ");
+
+                            Servidor.empleados.add(new Empleado(datosEmplSep[0], datosEmplSep[1],
+                                    Integer.parseInt(datosEmplSep[2]), datosEmplSep[3], datosEmplSep[4], datosEmplSep[5]));
+                        }
+
+                        valor = in.readInt();
+                        break;
+                    }
                 }
             }
+
+
         } catch(Exception e) {
             System.out.println("USUARIO DESCONECTADO DEL SERVIDOR." + e.getMessage());
         }

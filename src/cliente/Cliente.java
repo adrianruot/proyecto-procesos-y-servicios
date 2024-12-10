@@ -1,12 +1,17 @@
 package cliente;
 
+import cifrado.CifradoAsimetrico;
 import global.GLOBALES;
 import modelos.Empleado;
 import servidor.Servidor;
 
 import javax.net.ssl.*;
+import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.security.PublicKey;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -59,6 +64,13 @@ public class Cliente {
     }
 
     private void iniciarSesion() {
+        try {
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+            out.writeInt(1);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -97,8 +109,35 @@ public class Cliente {
         System.out.print(GLOBALES.cursor);
         String contra = scanner.next().trim();
 
-        Empleado empleadoNuevo = new Empleado(nombre, apellido, edad, email, usuario, contra);
+        nombre = nombre.replaceAll(" ", "");
+        apellido = apellido.replaceAll(" ", "");
+        email = email.replaceAll(" ", "");
+        usuario = usuario.replaceAll(" ", "");
+        contra = contra.replaceAll(" ", "");
 
+        //Empleado empleadoNuevo = new Empleado(nombre, apellido, edad, email, usuario, contra);
+        try {
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+            out.writeInt(2); // PARA INDICAR AL SERVIDOR QUE QUEREMOS REGISTRARNOS
+            // Y NOS DE SU CLAVE PUBLICA.
+
+            ObjectInputStream inObj = new ObjectInputStream(socket.getInputStream());
+
+            PublicKey publicKey = (PublicKey) inObj.readObject();
+
+            byte[] datosEmpleadoNuevo = CifradoAsimetrico.cifrarConClavePublica(
+                    nombre + " " + apellido + " " + edad + " " + email + " " + usuario + " " + contra, publicKey
+            );
+
+            // MANDAMOS TAMANIO DE EL ARRAY DE BYTES
+            out.writeInt(datosEmpleadoNuevo.length);
+
+            out.write(datosEmpleadoNuevo);
+        } catch(Exception e) {
+            System.out.println("Error en la conexion de datos.");
+            e.printStackTrace();
+        }
 
     }
 
