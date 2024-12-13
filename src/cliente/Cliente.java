@@ -80,8 +80,8 @@ public class Cliente {
     private String prompt(String mensaje) {
         System.out.println("\n" + mensaje + "\n");
         System.out.print(GLOBALES.cursor);
-
-        return scanner.next().trim();
+        String resul = scanner.nextLine().trim();
+        return resul;
     }
 
     // METODO PARA QUE EN CASO DE QUE HAYA INICIADO SESION EL USUARIO ENTRAR
@@ -103,7 +103,9 @@ public class Cliente {
                         System.out.println("\nInformacion precisa de la incidencia: \n");
                         System.out.print(GLOBALES.cursor);
 
-                        String infoPrec = scanner.next().trim();
+                        String infoPrec = scanner.nextLine().trim();
+
+                        scanner.nextLine();
 
                         String caracteristicas = prompt("Caracteristicas: ");
 
@@ -267,6 +269,7 @@ public class Cliente {
                 System.out.print(GLOBALES.cursor);
                 edad = scanner.nextInt();
                 check = 1;
+                scanner.nextLine();
 
             } catch (InputMismatchException ex) {
                 System.out.println("No se admiten caracteres en la edad por favor vuelva a intentarlo.\n");

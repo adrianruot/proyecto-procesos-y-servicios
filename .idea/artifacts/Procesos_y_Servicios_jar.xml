@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Procesos-y-Servicios:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Procesos_y_Servicios_jar</output-path>
+    <root id="archive" name="Procesos-y-Servicios.jar">
+      <element id="module-output" name="Procesos-y-Servicios" />
+    </root>
+  </artifact>
+</component>
