@@ -22,23 +22,32 @@ import java.util.random.RandomGenerator;
 
 public class Servidor {
 
+    // VARIABLE GLOBAL PARA LAS CONEXIONES DEL SERVER
     private SSLServerSocket server = null;
 
+    // CONEXION ESTABLECIDA DEL SOCKET
     private SSLSocket socket = null;
 
+    // ARRAYLIST DONDE ALMACENAREMOS TODOS LOS EMPLEADOS.
     public static ArrayList<Empleado> empleados = new ArrayList<>();
 
+    // ARRAYLIST DONDE ALMACENAREMOS TODAS LAS INCIDENCIAS
     public static ArrayList<Incidencia> incidencias = new ArrayList<>();
 
+    // CONSTRUCTOR DEL SERIVDOR.
     public Servidor() {
         try {
+
+            // CARGAMOS LAS KEYSTORES PARA PODER USAR SSL SOCKET.
             System.setProperty("javax.net.ssl.keyStore", "src/certificados/AlmacenSSL.jks");
             System.setProperty("javax.net.ssl.keyStorePassword", "1234567");
 
+            // CREAMOS EL SSLServerSokcet PARA LA ESCUCHA DE CLIENTES Y LUEGO MANIPULAR LA INFORMACION CON SOCKETS.
             server = (SSLServerSocket) SSLServerSocketFactory.getDefault().createServerSocket(4444);
 
             System.out.println("Servidor arrancado en IP: " + server.getInetAddress().getHostAddress());
 
+            // LOOP WHILE PARA PODER CREAR UN NUEVO HILO CADA VEZ QUE VIENE UNA PETICION
             while((socket = (SSLSocket) server.accept()) != null) {
                 System.out.println("Nueva conexion encontrada");
                 new HiloServidor(socket).start();
@@ -52,23 +61,29 @@ public class Servidor {
 
 class HiloServidor extends Thread {
 
+    // ALMACENAMOS DICHO SOCKET LA CONEXION YA ESTABLECIDA.
     private SSLSocket socket = null;
 
     HiloServidor(SSLSocket socket) {
         this.socket = socket;
     }
 
+    // EJECUCION DEL HILO
     @Override
     public void run() {
         try {
+            // CREAMOS LAS CLAVES PARA LUEGO USARLAS.
             KeyPair keyPair = CifradoAsimetrico.generarParClaves();
             PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
 
+            // CREAMOS LA CONEXION DE ENTRADA
             DataInputStream in = new DataInputStream(socket.getInputStream());
 
+            // ALMACENAMOS UN VALOR NUMERICO QUE NOS MANDARA EL CLIENTE PARA SABER QUE ACCION QUIERE TOMAR
             int valor = in.readInt();
 
+            // WHILE PARA SABER QUE QUIERE HACER EL CLIENTE HASTA QUE SE CIERRE SU SESION.
             while(valor != -1) {
                 switch(valor) { // LA LECTURA DE IN SERA LA OPCION QUE QUIERE HACER EL USUARIO.
                     case 1: { // INICIAR SESION

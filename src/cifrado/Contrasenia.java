@@ -3,6 +3,7 @@ package cifrado;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+// CLASE PARA PODER CREAR UN HASH DE LA CONTRASEÑA
 public class Contrasenia {
 
     public static byte[] cifrarContra(String plaintext) {

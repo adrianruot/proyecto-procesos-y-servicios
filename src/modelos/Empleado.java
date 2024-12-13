@@ -1,5 +1,6 @@
 package modelos;
 
+// CLASE DE ENTIDAD EMPLEADO
 public class Empleado {
 
     private String usuario;

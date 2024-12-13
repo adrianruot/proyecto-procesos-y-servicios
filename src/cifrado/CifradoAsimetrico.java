@@ -8,6 +8,7 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+// CLASE CON DOS METODOS ESTATICOS PARA SABER QUE ACCION QUIERE HACER SEGUN LA LOGICA DE CIFRADO ASIMETRICO.
 public class CifradoAsimetrico {
 
     public static KeyPair generarParClaves() throws Exception {

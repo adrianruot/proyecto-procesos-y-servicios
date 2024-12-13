@@ -16,23 +16,29 @@ public class Cliente {
 
     private SSLSocket socket = null;
 
+    // PARA ENTRADA DE DATOS.
     private Scanner scanner = new Scanner(System.in);
 
+    // CLAVES PUBLICA Y PRIVADA PARA USAR DESPUES
     private PrivateKey privateKey = null;
 
     private PublicKey publicKey = null;
 
+    // PARA SABER SI HEMOS INICIADO SESION
     private int iniciadoSesion = 0;
 
+    // NOMBRE DE USUARIO Y NOMBRE ESCOGIDO POR USUARIO
     private String usuarioInicio = null;
 
     private String nombreInicio = null;
 
     public Cliente() {
         try {
+            //CERTIFICADOS PARA LA CONEXION SSL
             System.setProperty("javax.net.ssl.trustStore", "src/certificados/UsuarioAlmacenSSL.jks");
             System.setProperty("javax.net.ssl.trustStorePassword", "7654321");
 
+            // NUESTRAS CLAVES PUBLICAS Y PRIVADAS.
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("DSA");
 
             KeyPair keyPair = keyPairGenerator.genKeyPair();
@@ -53,6 +59,7 @@ public class Cliente {
         }
     }
 
+    // METODO PARA FIRMAR UN CONTEXTO
     private byte[] firmarCaracteristicas(String caracteristicas) {
         try {
             Signature dsa = Signature.getInstance("SHA256withDSA");
@@ -69,6 +76,7 @@ public class Cliente {
         return null;
     }
 
+    // PARA PODER IMPRIMIR POR PANTALLA (SE ME OCURRIO MAS TARDE)
     private String prompt(String mensaje) {
         System.out.println("\n" + mensaje + "\n");
         System.out.print(GLOBALES.cursor);
@@ -76,15 +84,17 @@ public class Cliente {
         return scanner.next().trim();
     }
 
+    // METODO PARA QUE EN CASO DE QUE HAYA INICIADO SESION EL USUARIO ENTRAR
     private void iniciadoSesion() {
         int i = -1;
 
+        // LOOP WHILE PARA PODER PREGUNTAR AL USUARIO QUE ACCION QUIERE HACER
         while(i != 0) {
-            System.out.println("1: Crear incidencia\n2: Ver mis incidencias\n3: Salir\n");
+            System.out.println("Bienvenid@ " + nombreInicio + "\n1: Crear incidencia\n2: Ver mis incidencias\n3: Salir\n");
             System.out.print(GLOBALES.cursor);
             i = scanner.nextInt();
             switch (i) {
-                case 1: {
+                case 1: { // EN CASO DE QUE QUIERA CREAR UNA INCIDENCIA
                     try {
                         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -133,7 +143,7 @@ public class Cliente {
                     }
                     break;
                 }
-                case 2: {
+                case 2: { // EN CASO DE QUE QUIERA LEER SUS INCIDENCIAS
                     try {
                         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -150,20 +160,21 @@ public class Cliente {
 
                     break;
                 }
-                case 3: {
+                case 3: { // EN CASO DE QUE QUIERA CERRAR SESION
                     i = 0;
                     iniciadoSesion = 0;
                     usuarioInicio = null;
                     nombreInicio = null;
                     break;
                 }
-                default: {
+                default: { // EN CASO DE QUE NO HAYA ESCOGIDO UN VALOR CORRECTO
                     System.out.println("Por favor recuerde escoger o la opcion 1: Crear incidencia, 2: consultar mis incidencias, o la opción 3: Salir\n");
                 }
             }
         }
     }
 
+    // METODO PARA SABER SI QUIERE INICIAR SESION O REGISTRARSE
     private void inicioORegistroSesion() {
         int i = -1;
 
@@ -191,6 +202,7 @@ public class Cliente {
         }
     }
 
+    // METODO PARA INICIAR SESION MANDANDO DATOS AL SERVIDOR
     private void iniciarSesion() {
         try {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -235,6 +247,7 @@ public class Cliente {
 
     }
 
+    // METODO PARA REGISTRARNOS MANDANDO LOS DATOS AL SERVIDOR
     private void registrarSesion() {
         System.out.println("Panel para registrarse: \nNombre: \n");
         System.out.print(GLOBALES.cursor);

@@ -1,5 +1,6 @@
 package modelos;
 
+// CLASE PARA INCIDENCIAS
 public class Incidencia {
 
     private String infoPrec;
