@@ -80,7 +80,7 @@ public class Cliente {
         int i = -1;
 
         while(i != 0) {
-            System.out.println("1: Crear incidencia\n2: Salir\n");
+            System.out.println("1: Crear incidencia\n2: Ver mis incidencias\n3: Salir\n");
             System.out.print(GLOBALES.cursor);
             i = scanner.nextInt();
             switch (i) {
@@ -99,20 +99,58 @@ public class Cliente {
 
                         byte[] bytesCarac = firmarCaracteristicas(caracteristicas);
 
+                        //String impacto = prompt("Impacto (Leve, Moderada, Urgente): ");
+
+                        int check = 0;
+                        String impacto = null;
+
+                        // EN ESTE WHILE COMPROBAMOS LOS PARAMETROS INTRODUCIDOS SON CORRECTOS.
+                        while(check == 0) {
+                            impacto = prompt("Impacto (Leve, Moderada, Urgente): ");
+                            if(impacto.toLowerCase().equals("leve") || impacto.toLowerCase().equals("moderada") || impacto.toLowerCase().equals("urgente")) {
+                                check = 1;
+                            }
+                        }
+
+
                         out.writeUTF(infoPrec);
 
                         out.writeInt(bytesCarac.length);
 
                         out.write(bytesCarac);
 
-                        //ObjectOutputStream outObj = new ObjectOutputStream(socket.getOutputStream());
+                        out.writeUTF(caracteristicas);
 
+                        out.writeUTF(impacto.trim().toLowerCase());
+
+                        out.writeUTF(usuarioInicio);
+
+                        ObjectOutputStream outObj = new ObjectOutputStream(socket.getOutputStream());
+
+                        outObj.writeObject(this.publicKey);
                     } catch(Exception e) {
-
+                        System.out.println("Fallo en la incidencia");
                     }
                     break;
                 }
                 case 2: {
+                    try {
+                        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+                        out.writeInt(4); // QUEREMOS CONSULTAR MIS INCIDENCIAS
+
+                        out.writeUTF(usuarioInicio);
+
+                        DataInputStream in = new DataInputStream(socket.getInputStream());
+
+                        System.out.println(in.readUTF());
+                    } catch(Exception e) {
+                        System.out.println("Fallo en la incidencia");
+                    }
+
+                    break;
+                }
+                case 3: {
                     i = 0;
                     iniciadoSesion = 0;
                     usuarioInicio = null;
@@ -120,7 +158,7 @@ public class Cliente {
                     break;
                 }
                 default: {
-                    System.out.println("Por favor recuerde escoger o la opcion 1: Crear incidencia, o la opción 2: Salir\n");
+                    System.out.println("Por favor recuerde escoger o la opcion 1: Crear incidencia, 2: consultar mis incidencias, o la opción 3: Salir\n");
                 }
             }
         }

@@ -44,4 +44,9 @@ public class Incidencia {
     public void setImpacto(String impacto) {
         this.impacto = impacto;
     }
+
+    @Override
+    public String toString() {
+        return "Incidencia: Informacion precisa -> " + getInfoPrec() + " caracteristicas ->  " + getCaracteristicas() + " impacto -> " + getImpacto() + " usuario -> " + getUsuario();
+    }
 }

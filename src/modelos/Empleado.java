@@ -12,9 +12,9 @@ public class Empleado {
 
     private String email;
 
-    private String contrasenia;
+    private byte[] contrasenia;
 
-    public Empleado(String nombre, String apellido, int edad, String email, String usuario, String contrasenia) {
+    public Empleado(String nombre, String apellido, int edad, String email, String usuario, byte[] contrasenia) {
         this.usuario = usuario;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -63,11 +63,11 @@ public class Empleado {
         this.email = email;
     }
 
-    public String getContrasenia() {
+    public byte[] getContrasenia() {
         return contrasenia;
     }
 
-    public void setContrasenia(String contrasenia) {
+    public void setContrasenia(byte[] contrasenia) {
         this.contrasenia = contrasenia;
     }
 }
